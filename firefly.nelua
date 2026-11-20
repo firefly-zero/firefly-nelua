@@ -26,6 +26,35 @@ context.rootpragmas.abort = "trap"
 
 local ff = @record{}
 
+global ff.width = 240
+global ff.height = 160
+
+global ff.Point = @record{
+  x: integer,
+  y: integer,
+}
+
+function ff.p(x: integer, y: integer): ff.Point
+  return ff.Point{x = x, y = y}
+end
+
+global ff.Size = @record{
+  w: integer,
+  h: integer,
+}
+
+global ff.Angle: type = @float32
+
+-- Define an angle in radians where Tau (doubled Pi) is the full circle.
+function ff.radians(a: float32): ff.Angle
+	return ff.Angle(a)
+end
+
+-- Define an angle in radians where 360.0 is the full circle.
+function ff.degrees(a: float32): ff.Angle
+	return ff.Angle(a * 3.14159265358979323846264338327950288419716939937510582097494459 / 180.0)
+end
+
 global ff.Color = @enum{
   -- No color (100% transparency). Default.
 	None = 0,
@@ -63,9 +92,25 @@ global ff.Color = @enum{
 	DarkGray = 16
 }
 
+global ff.RGB = @record{
+  r: uint8,
+  g: uint8,
+  b: uint8,
+}
+
+global ff.Style = @record{
+  fill_color: ff.Color,
+  stroke_color: ff.Color,
+  stroke_width: integer,
+}
+
+global ff.LineStyle = @record{
+  color: ff.Color,
+  width: integer,
+}
+
 ## function ff.value.init(cb)
   local function _init(): void <cexport, cattribute'export_name("init")', entrypoint>
-    -- If enabled, the GC should be initialized as the first thing
     ## if not pragmas.nogc then
       gc:init(nilptr)
     ## end
@@ -83,8 +128,6 @@ global ff.Color = @enum{
     ## end
 
     ## if not pragmas.nogc then
-      -- We must always manually call garbage collection in the end of every frame.
-      -- This is the only safe point to do so, because in WASM we cannot scan the function stack.
       gc:step()
     ## end
   end
