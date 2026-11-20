@@ -10,7 +10,7 @@ ldflags '-Wl,--no-entry'
 -- https://clang.llvm.org/docs/ClangCommandLineReference.html#cmdoption-clang-mexec-model
 cflags '-mexec-model=reactor'
 
--- https://github.com/edubart/nelua-lang/blob/master/lualib/nelua/typedefs.lua
+-- https://github.com/edubart/nelua-lang/blob/master/lualib/nelua/typedefs.lua#L219
 
 -- Disable entry point generation for the GC.
 context.rootpragmas.nogcentry = true
@@ -63,11 +63,8 @@ global ff.Color = @enum{
 	DarkGray = 16
 }
 
-## function ff.value.init(update, render)
-  ## static_assert(update, 'please pass the `update` function!')
-  ## static_assert(render, 'please pass the `render` function!')
-
-  local function _init(): void <cexport, codename'init', cattribute'export_name("init")', entrypoint>
+## function ff.value.init(cb)
+  local function _init(): void <cexport, cattribute'export_name("init")', entrypoint>
     -- If enabled, the GC should be initialized as the first thing
     ## if not pragmas.nogc then
       gc:init(nilptr)
@@ -75,10 +72,15 @@ global ff.Color = @enum{
     -- This will run all the code in the top scopes
     local function nelua_main(argc: cint, argv: *cstring): cint <cimport,nodecl> end
     nelua_main(0, nilptr)
+    ## if cb.init then
+      #[cb.init]#()
+    ## end
   end
 
-  local function _update(): void <cexport, codename'update', cattribute'export_name("update")'>
-    #[update]#()
+  local function _update(): void <cexport, cattribute'export_name("update")'>
+    ## if cb.update then
+      #[cb.update]#()
+    ## end
 
     ## if not pragmas.nogc then
       -- We must always manually call garbage collection in the end of every frame.
@@ -87,9 +89,17 @@ global ff.Color = @enum{
     ## end
   end
 
-  local function _render(): void <cexport, codename'render', cattribute'export_name("render")'>
-    #[render]#()
-  end
+  ## if cb.render then
+    local function _render(): void <cexport, cattribute'export_name("render")'>
+      #[cb.render]#()
+    end
+  ## end
+
+  ## if cb.before_exit then
+    local function _before_exit(): void <cexport, cattribute'export_name("before_exit")'>
+      #[cb.before_exit]#()
+    end
+  ## end
 ## end
 
 

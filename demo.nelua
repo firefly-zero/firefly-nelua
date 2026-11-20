@@ -10,4 +10,4 @@ local function render()
   ff.clear_screen(ff.Color.Green)
 end
 
-## ff.value.init(update, render)
+## ff.value.init({render = render})
