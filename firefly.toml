@@ -1,0 +1,7 @@
+author_id = "demo"
+app_id = "nelua-triagnle"
+author_name = "Demo"
+app_name = "Triangle Demo (Nelua)"
+
+[files]
+_bin = { path = "main.wasm", copy = true }

@@ -1,0 +1,13 @@
+## context.rootpragmas.nogc = true
+
+local firefly = require 'firefly'
+
+
+local function update()
+end
+
+local function render()
+  firefly.clear_screen(4)
+end
+
+## firefly.value.init(update, render)
