@@ -140,7 +140,7 @@ global ff.LineStyle = @record{
 }
 
 
--- METHODS --
+-- CONSTRUCTORS --
 
 
 function ff.p(x: integer, y: integer): ff.Point
@@ -156,6 +156,18 @@ end
 function ff.degrees(a: float32): ff.Angle
 	local pi <comptime> = 3.14159265358979323846264338327950288419716939937510582097494459
   return ff.Angle(a * pi / 180.0)
+end
+
+function ff.solid(c: ff.Color): ff.Style
+  return ff.Style{fill_color = c}
+end
+
+function ff.outlined(c: ff.Color, w: integer): ff.Style
+  return ff.Style{stroke_color = c, stroke_width = w}
+end
+
+function ff.l(c: ff.Color, w: integer): ff.LineStyle
+  return ff.LineStyle{color = c, width = w}
 end
 
 
