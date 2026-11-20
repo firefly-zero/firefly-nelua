@@ -10,16 +10,15 @@ ldflags '-Wl,--no-entry'
 -- https://clang.llvm.org/docs/ClangCommandLineReference.html#cmdoption-clang-mexec-model
 cflags '-mexec-model=reactor'
 
--- "Disable entry point generation for the GC":
--- https://github.com/edubart/nelua-lang/blob/112409b9b54468275a4f4700f04e1b03966994bb/lualib/nelua/typedefs.lua#L238-L247
+-- https://github.com/edubart/nelua-lang/blob/master/lualib/nelua/typedefs.lua
+
+-- Disable entry point generation for the GC.
 context.rootpragmas.nogcentry = true
 
--- "Changes how messages are written to stderr when a runtime error occur":
--- https://github.com/edubart/nelua-lang/blob/112409b9b54468275a4f4700f04e1b03966994bb/lualib/nelua/typedefs.lua#L238-L247
+-- Changes how messages are written to stderr when a runtime error occur.
 context.rootpragmas.writestderr = "hooked"
 
 -- "Changes abort semantics"
--- https://github.com/edubart/nelua-lang/blob/112409b9b54468275a4f4700f04e1b03966994bb/lualib/nelua/typedefs.lua#L228-L237
 context.rootpragmas.abort = "trap"
 ]]
 
@@ -57,6 +56,28 @@ local firefly = @record{}
   end
 ## end
 
+
 function firefly.clear_screen(c: int32) <cimport 'clear_screen', cattribute'import_module("graphics"), import_name("clear_screen")'> end
+
+
+local function write_stderr(msg: cstring, len: usize, flush: boolean): void <codename "nelua_write_stderr">
+  -- _log_error(msg, len)
+end
+
+global function print(...: varargs)
+  local stringbuilder = require 'stringbuilder'
+
+  local sb: stringbuilder <close>
+  ## for i=1,select('#', ...) do
+    ## if i > 1 then
+      sb:write('\t')
+    ## end
+    sb:write(#[select(i, ...)]#)
+  ## end
+
+  local text_view = sb:view()
+  -- _log_debug(text_view.data, #text_view)
+end
+
 
 return firefly
