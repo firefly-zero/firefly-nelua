@@ -26,6 +26,50 @@ context.rootpragmas.abort = "trap"
 
 local ff = @record{}
 
+
+-- CALLBACKS --
+
+
+## function ff.value.init(cb)
+  local function _init(): void <cexport, cattribute'export_name("init")', entrypoint>
+    ## if not pragmas.nogc then
+      gc:init(nilptr)
+    ## end
+    -- This will run all the code in the top scopes
+    local function nelua_main(argc: cint, argv: *cstring): cint <cimport,nodecl> end
+    nelua_main(0, nilptr)
+    ## if cb.init then
+      #[cb.init]#()
+    ## end
+  end
+
+  local function _update(): void <cexport, cattribute'export_name("update")'>
+    ## if cb.update then
+      #[cb.update]#()
+    ## end
+
+    ## if not pragmas.nogc then
+      gc:step()
+    ## end
+  end
+
+  ## if cb.render then
+    local function _render(): void <cexport, cattribute'export_name("render")'>
+      #[cb.render]#()
+    end
+  ## end
+
+  ## if cb.before_exit then
+    local function _before_exit(): void <cexport, cattribute'export_name("before_exit")'>
+      #[cb.before_exit]#()
+    end
+  ## end
+## end
+
+
+-- CONSTANTS AND TYPES --
+
+
 global ff.width = 240
 global ff.height = 160
 
@@ -34,26 +78,12 @@ global ff.Point = @record{
   y: integer,
 }
 
-function ff.p(x: integer, y: integer): ff.Point
-  return ff.Point{x = x, y = y}
-end
-
 global ff.Size = @record{
   w: integer,
   h: integer,
 }
 
 global ff.Angle: type = @float32
-
--- Define an angle in radians where Tau (doubled Pi) is the full circle.
-function ff.radians(a: float32): ff.Angle
-	return ff.Angle(a)
-end
-
--- Define an angle in radians where 360.0 is the full circle.
-function ff.degrees(a: float32): ff.Angle
-	return ff.Angle(a * 3.14159265358979323846264338327950288419716939937510582097494459 / 180.0)
-end
 
 global ff.Color = @enum{
   -- No color (100% transparency). Default.
@@ -109,49 +139,41 @@ global ff.LineStyle = @record{
   width: integer,
 }
 
-## function ff.value.init(cb)
-  local function _init(): void <cexport, cattribute'export_name("init")', entrypoint>
-    ## if not pragmas.nogc then
-      gc:init(nilptr)
-    ## end
-    -- This will run all the code in the top scopes
-    local function nelua_main(argc: cint, argv: *cstring): cint <cimport,nodecl> end
-    nelua_main(0, nilptr)
-    ## if cb.init then
-      #[cb.init]#()
-    ## end
-  end
 
-  local function _update(): void <cexport, cattribute'export_name("update")'>
-    ## if cb.update then
-      #[cb.update]#()
-    ## end
+-- METHODS --
 
-    ## if not pragmas.nogc then
-      gc:step()
-    ## end
-  end
 
-  ## if cb.render then
-    local function _render(): void <cexport, cattribute'export_name("render")'>
-      #[cb.render]#()
-    end
-  ## end
+function ff.p(x: integer, y: integer): ff.Point
+  return ff.Point{x = x, y = y}
+end
 
-  ## if cb.before_exit then
-    local function _before_exit(): void <cexport, cattribute'export_name("before_exit")'>
-      #[cb.before_exit]#()
-    end
-  ## end
-## end
+-- Define an angle in radians where Tau (doubled Pi) is the full circle.
+function ff.radians(a: float32): ff.Angle
+	return ff.Angle(a)
+end
+
+-- Define an angle in radians where 360.0 is the full circle.
+function ff.degrees(a: float32): ff.Angle
+	local pi <comptime> = 3.14159265358979323846264338327950288419716939937510582097494459
+  return ff.Angle(a * pi / 180.0)
+end
+
+
+-- BINDINGS --
 
 
 local function _clear_screen(c: int32) <cimport 'clear_screen', cattribute'import_module("graphics"), import_name("clear_screen")'> end
 
 
+-- FUNCTIONS --
+
+
 function ff.clear_screen(c: ff.Color)
   _clear_screen(c)
 end
+
+
+-- HOOKS --
 
 
 local function write_stderr(msg: cstring, len: usize, flush: boolean): void <codename "nelua_write_stderr">
