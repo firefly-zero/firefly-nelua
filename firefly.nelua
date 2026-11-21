@@ -147,6 +147,12 @@ global ff.File = @record { _b: span(byte) }
 global ff.Font = @record { _b: span(byte) }
 global ff.Image = @record { _b: span(byte) }
 
+global ff.SubImage = @record {
+  _b: span(byte),
+  _p: ff.Point,
+  _s: ff.Size,
+}
+
 
 -- CONSTRUCTORS --
 
@@ -191,6 +197,14 @@ end
 
 function ff.File:to_bytes(): span(byte)
   return self._b
+end
+
+function ff.Image:sub(p: ff.Point, s: ff.Size): ff.SubImage
+  return ff.SubImage {
+    _b = self._b,
+    _p = p,
+    _s = s,
+  }
 end
 
 
@@ -241,7 +255,7 @@ local function _draw_sub_image(
   subX: int32, subY: int32,
   subWidth: uint32, subHeight: uint32)
     <cimport, cattribute 'import_module("graphics"), import_name("draw_sub_image")'> end
-local function _draw_sub_tilee(
+local function _draw_sub_tile(
   ptr: *byte,
   size: uint32,
   -- Screen area to fill.
@@ -255,15 +269,11 @@ local function _draw_nine_slice(
   ptr: *byte,
   size: uint32,
   -- Screen area to fill.
-  x: int32,
-  y: int32,
-  w: uint32,
-  h: uint32,
+  x: int32, y: int32,
+  w: uint32, h: uint32,
   -- The area of the middle square on the image.
-  midX: int32,
-  midY: int32,
-  midWidth: uint32,
-  midHeight: uint32)
+  midX: int32, midY: int32,
+  midWidth: uint32, midHeight: uint32)
     <cimport, cattribute 'import_module("graphics"), import_name("draw_nine_slice")'> end
 local function _set_canvas(ptr: *byte, size: uint32)
   <cimport, cattribute 'import_module("graphics"), import_name("set_canvas")'> end
@@ -376,6 +386,34 @@ end
 
 function ff.draw_text(t: string, f: ff.Font, p: ff.Point, c: ff.Color)
   _draw_text(t, #t, &f._b[0], #f._b, p.x, p.y, c)
+end
+
+function ff.draw_qr(t: string, p: ff.Point, black: ff.Color, white: ff.Color)
+  _draw_qr(t, #t, p.x, p.y, black, white)
+end
+
+function ff.draw_image(i: ff.Image, p: ff.Point)
+  _draw_image(&i._b[0], #i._b, p.x, p.y)
+end
+
+function ff.draw_sub_image(i: ff.SubImage, p: ff.Point)
+  _draw_sub_image(&i._b[0], #i._b, p.x, p.y, i._p.x, i._p.y, i._s.w, i._s.h)
+end
+
+function ff.draw_sub_tile(i: ff.SubImage, p: ff.Point, s: ff.Size)
+  _draw_sub_tile(&i._b[0], #i._b, p.x, p.y, s.w, s.h, i._p.x, i._p.y, i._s.w, i._s.h)
+end
+
+function ff.draw_nine_slice(i: ff.SubImage, p: ff.Point, s: ff.Size)
+  _draw_nine_slice(&i._b[0], #i._b, p.x, p.y, s.w, s.h, i._p.x, i._p.y, i._s.w, i._s.h)
+end
+
+function ff.set_canvas(i: ff.Image)
+  _set_canvas(&i._b[0], #i._b)
+end
+
+function ff.unset_canvas()
+  _unset_canvas()
 end
 
 
