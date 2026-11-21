@@ -86,7 +86,7 @@ global ff.Size = @record{
   h: integer,
 }
 
-global ff.Angle: type = @record {_a: float32}
+global ff.Angle: type = @record{_a: float32}
 
 global ff.Color = @enum{
   -- No color (100% transparency). Default.
@@ -143,14 +143,23 @@ global ff.LineStyle = @record{
 }
 
 
-global ff.File = @record { _b: span(byte) }
-global ff.Font = @record { _b: span(byte) }
-global ff.Image = @record { _b: span(byte) }
+global ff.File = @record{ _b: span(byte) }
+global ff.Font = @record{ _b: span(byte) }
+global ff.Image = @record{ _b: span(byte) }
 
-global ff.SubImage = @record {
+global ff.SubImage = @record{
   _b: span(byte),
   _p: ff.Point,
   _s: ff.Size,
+}
+
+global ff.Peer = @record{ _p: uint8 }
+global ff.Peer.combined = ff.Peer{0xFF}
+global ff.combined = ff.Peer{0xFF}
+
+global ff.Pad = @record{
+  x: integer,
+  y: integer,
 }
 
 
@@ -329,7 +338,7 @@ local function _quit(): void
   <cimport, cattribute 'import_module("misc"), import_name("quit")'> end
 
 
--- FUNCTIONS --
+-- FUNCTIONS: GRAPHICS --
 
 
 function ff.clear_screen(c: ff.Color): void
@@ -414,6 +423,23 @@ end
 
 function ff.unset_canvas(): void
   _unset_canvas()
+end
+
+
+-- FUNCTIONS: INPUT --
+
+
+function ff.read_pad(p: ff.Peer): (ff.Pad, boolean)
+  local raw = _read_pad(p._p)
+	local pressed = raw ~= 0xffff
+	if not pressed then
+		return {}, false
+	end
+	local pad = ff.Pad{
+		x = integer(int16(raw >> 16)),
+		y = integer(int16(raw)),
+	}
+	return pad, true
 end
 
 
