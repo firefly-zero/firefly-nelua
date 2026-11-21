@@ -22,6 +22,8 @@ context.rootpragmas.writestderr = "hooked"
 context.rootpragmas.abort = "trap"
 ]]
 
+require 'span'
+
 -- https://codeberg.org/Andre-LA/nelua-gamercade/src/branch/main/gamercade.nelua
 
 local ff = @record{}
@@ -84,7 +86,7 @@ global ff.Size = @record{
   h: integer,
 }
 
-global ff.Angle: type = @float32
+global ff.Angle: type = @record {_a: float32}
 
 global ff.Color = @enum{
   -- No color (100% transparency). Default.
@@ -141,6 +143,11 @@ global ff.LineStyle = @record{
 }
 
 
+global ff.File = @record { _b: span(byte) }
+global ff.Font = @record { _b: span(byte) }
+global ff.Image = @record { _b: span(byte) }
+
+
 -- CONSTRUCTORS --
 
 
@@ -150,13 +157,13 @@ end
 
 -- Define an angle in radians where Tau (doubled Pi) is the full circle.
 function ff.radians(a: float32): ff.Angle
-  return ff.Angle(a)
+  return ff.Angle{a}
 end
 
 -- Define an angle in radians where 360.0 is the full circle.
 function ff.degrees(a: float32): ff.Angle
   local pi <comptime> = 3.14159265358979323846264338327950288419716939937510582097494459
-  return ff.Angle(a * pi / 180.0)
+  return ff.Angle{a * pi / 180.0}
 end
 
 function ff.solid(c: ff.Color): ff.Style
@@ -169,6 +176,21 @@ end
 
 function ff.l(c: ff.Color, w: integer): ff.LineStyle
   return ff.LineStyle{color = c, width = w}
+end
+
+
+-- METHODS --
+
+function ff.File:to_image(): ff.Image
+  return ff.Image{self._b}
+end
+
+function ff.File:to_font(): ff.Font
+  return ff.Font{self._b}
+end
+
+function ff.File:to_bytes(): span(byte)
+  return self._b
 end
 
 
@@ -191,7 +213,7 @@ local function _draw_rect(x: int32, y: int32, w: int32, h: int32, fc: int32, sc:
   <cimport, cattribute 'import_module("graphics"), import_name("draw_rect")'> end
 local function _draw_rounded_rect(x: int32, y: int32, w: int32, h: int32, cw: int32, ch: int32, fc: int32, sc: int32, sw: int32)
   <cimport, cattribute 'import_module("graphics"), import_name("draw_rounded_rect")'> end
-local function _draw_circle(x: int32, y: int32, d, fc: int32, sc: int32, sw: int32)
+local function _draw_circle(x: int32, y: int32, d: int32, fc: int32, sc: int32, sw: int32)
   <cimport, cattribute 'import_module("graphics"), import_name("draw_circle")'> end
 local function _draw_ellipse(x: int32, y: int32, w: int32, h: int32, fc: int32, sc: int32, sw: int32)
   <cimport, cattribute 'import_module("graphics"), import_name("draw_ellipse")'> end
@@ -203,7 +225,7 @@ local function _draw_sector(x: int32, y: int32, d: int32, ast: float32, asw: flo
   <cimport, cattribute 'import_module("graphics"), import_name("draw_sector")'> end
 local function _draw_text(
   textPtr: cstring, textLen: uint32,
-  fontPtr: cstring, fontLen: uint32,
+  fontPtr: *byte, fontLen: uint32,
   x: int32, y: int32, color: int32)
     <cimport, cattribute 'import_module("graphics"), import_name("draw_text")'> end
 local function _draw_qr(
@@ -211,16 +233,16 @@ local function _draw_qr(
   x: int32, y: int32,
   black: int32, white: int32)
     <cimport, cattribute 'import_module("graphics"), import_name("draw_qr")'> end
-local function _draw_image(ptr: cstring, size: uint32, x: int32, y: int32)
+local function _draw_image(ptr: *byte, size: uint32, x: int32, y: int32)
   <cimport, cattribute 'import_module("graphics"), import_name("draw_image")'> end
 local function _draw_sub_image(
-  ptr: cstring, size: uint32,
+  ptr: *byte, size: uint32,
   x: int32, y: int32,
   subX: int32, subY: int32,
   subWidth: uint32, subHeight: uint32)
     <cimport, cattribute 'import_module("graphics"), import_name("draw_sub_image")'> end
 local function _draw_sub_tilee(
-  ptr: cstring,
+  ptr: *byte,
   size: uint32,
   -- Screen area to fill.
   x: int32, y: int32,
@@ -230,7 +252,7 @@ local function _draw_sub_tilee(
   subWidth: uint32, subHeight: uint32)
     <cimport, cattribute 'import_module("graphics"), import_name("draw_sub_tile")'> end
 local function _draw_nine_slice(
-  ptr: cstring,
+  ptr: *byte,
   size: uint32,
   -- Screen area to fill.
   x: int32,
@@ -243,7 +265,7 @@ local function _draw_nine_slice(
   midWidth: uint32,
   midHeight: uint32)
     <cimport, cattribute 'import_module("graphics"), import_name("draw_nine_slice")'> end
-local function _set_canvas(ptr: cstring, size: uint32)
+local function _set_canvas(ptr: *byte, size: uint32)
   <cimport, cattribute 'import_module("graphics"), import_name("set_canvas")'> end
 local function _unset_canvas()
   <cimport, cattribute 'import_module("graphics"), import_name("unset_canvas")'> end
@@ -253,9 +275,9 @@ local function _read_buttons(player: uint32): uint32
   <cimport, cattribute 'import_module("input"), import_name("read_buttons")'> end
 local function _get_file_size(pathPtr: cstring, pathLen: uint32): uint32
   <cimport, cattribute 'import_module("fs"), import_name("get_file_size")'> end
-local function _load_file(pathPtr: cstring, pathLen: uint32,bufPtr: cstring, bufLen: uint32): uint32
+local function _load_file(pathPtr: cstring, pathLen: uint32, bufPtr: *byte, bufLen: uint32): uint32
   <cimport, cattribute 'import_module("fs"), import_name("load_file")'> end
-local function _dump_file(pathPtr: cstring, pathLen: uint32,bufPtr: cstring, bufLen: uint32): uint32
+local function _dump_file(pathPtr: cstring, pathLen: uint32, bufPtr: *byte, bufLen: uint32): uint32
   <cimport, cattribute 'import_module("fs"), import_name("dump_file")'> end
 local function _remove_file(pathPtr: cstring, pathLen: uint32)
   <cimport, cattribute 'import_module("fs"), import_name("remove_file")'> end
@@ -263,9 +285,9 @@ local function _get_me(): uint32
   <cimport, cattribute 'import_module("net"), import_name("get_me")'> end
 local function _get_peers(): uint32
   <cimport, cattribute 'import_module("net"), import_name("get_peers")'> end
-local function _save_stash(peerID: uint32, bufPtr: cstring, bufLen: uint32)
+local function _save_stash(peerID: uint32, bufPtr: *byte, bufLen: uint32)
   <cimport, cattribute 'import_module("net"), import_name("save_stash")'> end
-local function _load_stash(peerID: uint32, bufPtr: cstring, bufLen: uint32): uint32
+local function _load_stash(peerID: uint32, bufPtr: *byte, bufLen: uint32): uint32
   <cimport, cattribute 'import_module("net"), import_name("load_stash")'> end
 local function _add_progress(peerID, badgeID: uint32, val: int32): uint32
   <cimport, cattribute 'import_module("stats"), import_name("add_progress")'> end
@@ -302,6 +324,58 @@ local function _quit()
 
 function ff.clear_screen(c: ff.Color)
   _clear_screen(c)
+end
+
+function ff.set_color(c: ff.Color, rgb: ff.RGB)
+  _set_color(c, rgb.r, rgb.g, rgb.b)
+end
+
+function ff.flip_x()
+  _flip_x()
+end
+
+function ff.flip_y()
+  _flip_y()
+end
+
+function ff.draw_point(p: ff.Point, c: ff.Color)
+  _draw_point(p.x, p.y, c)
+end
+
+function ff.draw_line(a: ff.Point, b: ff.Point, s: ff.LineStyle)
+  _draw_line(a.x, a.y, b.x, b.y, s.color, s.width)
+end
+
+function ff.draw_rect(p: ff.Point, b: ff.Size, s: ff.Style)
+  _draw_rect(p.x, p.y, b.w, b.h, s.fill_color, s.stroke_color, s.stroke_width)
+end
+
+function ff.draw_rounded_rect(p: ff.Point, b: ff.Size, corners: ff.Size, s: ff.Style)
+  _draw_rounded_rect(p.x, p.y, b.w, b.h, corners.w, corners.h, s.fill_color, s.stroke_color, s.stroke_width)
+end
+
+function ff.draw_circle(p: ff.Point, d: integer, s: ff.Style)
+  _draw_circle(p.x, p.y, d, s.fill_color, s.stroke_color, s.stroke_width)
+end
+
+function ff.draw_ellipse(p: ff.Point, b: ff.Size, s: ff.Style)
+  _draw_ellipse(p.x, p.y, b.w, b.h, s.fill_color, s.stroke_color, s.stroke_width)
+end
+
+function ff.draw_triangle(a: ff.Point, b: ff.Point, c: ff.Point, s: ff.Style)
+  _draw_triangle(a.x, a.y, b.x, b.y, c.x, c.y, s.fill_color, s.stroke_color, s.stroke_width)
+end
+
+function ff.draw_arc(p: ff.Point, d: integer, start: ff.Angle, sweep: ff.Angle, s: ff.Style)
+  _draw_arc(p.x, p.y, d, start._a, sweep._a, s.fill_color, s.stroke_color, s.stroke_width)
+end
+
+function ff.draw_sector(p: ff.Point, d: integer, start: ff.Angle, sweep: ff.Angle, s: ff.Style)
+  _draw_sector(p.x, p.y, d, start._a, sweep._a, s.fill_color, s.stroke_color, s.stroke_width)
+end
+
+function ff.draw_text(t: string, f: ff.Font, p: ff.Point, c: ff.Color)
+  _draw_text(t, #t, &f._b[0], #f._b, p.x, p.y, c)
 end
 
 
