@@ -162,6 +162,13 @@ global ff.Pad = @record{
   y: integer,
 }
 
+global ff.Buttons = @record{
+  s: boolean,
+  e: boolean,
+  w: boolean,
+  n: boolean,
+}
+
 
 -- CONSTRUCTORS --
 
@@ -440,6 +447,21 @@ function ff.read_pad(p: ff.Peer): (ff.Pad, boolean)
 		y = integer(int16(raw)),
 	}
 	return pad, true
+end
+
+function ff.read_buttons(p: ff.Peer): ff.Buttons
+  -- Check if the given uint32 value has the given bit set.
+  local function has_bit_set(val: uint32, bit: uint8): boolean <inline>
+    return (val >> bit) & 0b1 ~= 0
+  end
+
+  local raw = _read_buttons(p._p)
+	return ff.Buttons{
+		s = has_bit_set(raw, 0),
+		e = has_bit_set(raw, 1),
+		w = has_bit_set(raw, 2),
+		n = has_bit_set(raw, 3),
+	}
 end
 
 
