@@ -36,7 +36,8 @@ local ff = @record{}
       gc:init(nilptr)
     ## end
     -- This will run all the code in the top scopes
-    local function nelua_main(argc: cint, argv: *cstring): cint <cimport,nodecl> end
+    local function nelua_main(argc: cint, argv: *cstring): cint
+      <cimport,nodecl> end
     nelua_main(0, nilptr)
     ## if cb.init then
       #[cb.init]#()
@@ -87,39 +88,39 @@ global ff.Angle: type = @float32
 
 global ff.Color = @enum{
   -- No color (100% transparency). Default.
-	None = 0,
-	-- Black color: #1A1C2C.
-	Black = 1,
-	-- Purple color: #5D275D.
-	Purple = 2,
-	-- Red color: #B13E53.
-	Red = 3,
-	-- Orange color: #EF7D57.
-	Orange = 4,
-	-- Yellow color: #FFCD75.
-	Yellow = 5,
-	-- Light green color: #A7F070.
-	LightGreen = 6,
-	-- Green color: #38B764.
-	Green = 7,
-	-- Dark green color: #257179.
-	DarkGreen = 8,
-	-- Dark blue color: #29366F.
-	DarkBlue = 9,
-	-- Blue color: #3B5DC9.
-	Blue = 10,
-	-- Light blue color: #41A6F6.
-	LightBlue = 11,
-	-- Cyan color: #73EFF7.
-	Cyan = 12,
-	-- White color: #F4F4F4.
-	White = 13,
-	-- Light gray color: #94B0C2.
-	LightGray = 14,
-	-- Gray color: #566C86.
-	Gray = 15,
-	-- Dark gray color: #333C57.
-	DarkGray = 16
+  None = 0,
+  -- Black color: #1A1C2C.
+  Black = 1,
+  -- Purple color: #5D275D.
+  Purple = 2,
+  -- Red color: #B13E53.
+  Red = 3,
+  -- Orange color: #EF7D57.
+  Orange = 4,
+  -- Yellow color: #FFCD75.
+  Yellow = 5,
+  -- Light green color: #A7F070.
+  LightGreen = 6,
+  -- Green color: #38B764.
+  Green = 7,
+  -- Dark green color: #257179.
+  DarkGreen = 8,
+  -- Dark blue color: #29366F.
+  DarkBlue = 9,
+  -- Blue color: #3B5DC9.
+  Blue = 10,
+  -- Light blue color: #41A6F6.
+  LightBlue = 11,
+  -- Cyan color: #73EFF7.
+  Cyan = 12,
+  -- White color: #F4F4F4.
+  White = 13,
+  -- Light gray color: #94B0C2.
+  LightGray = 14,
+  -- Gray color: #566C86.
+  Gray = 15,
+  -- Dark gray color: #333C57.
+  DarkGray = 16
 }
 
 global ff.RGB = @record{
@@ -149,12 +150,12 @@ end
 
 -- Define an angle in radians where Tau (doubled Pi) is the full circle.
 function ff.radians(a: float32): ff.Angle
-	return ff.Angle(a)
+  return ff.Angle(a)
 end
 
 -- Define an angle in radians where 360.0 is the full circle.
 function ff.degrees(a: float32): ff.Angle
-	local pi <comptime> = 3.14159265358979323846264338327950288419716939937510582097494459
+  local pi <comptime> = 3.14159265358979323846264338327950288419716939937510582097494459
   return ff.Angle(a * pi / 180.0)
 end
 
@@ -174,7 +175,126 @@ end
 -- BINDINGS --
 
 
-local function _clear_screen(c: int32) <cimport 'clear_screen', cattribute'import_module("graphics"), import_name("clear_screen")'> end
+local function _clear_screen(c: int32)
+  <cimport, cattribute 'import_module("graphics"), import_name("clear_screen")'> end
+local function _set_color(c: int32, r: int32, g: int32, b: int32)
+  <cimport, cattribute 'import_module("graphics"), import_name("set_color")'> end
+local function _flip_x()
+  <cimport, cattribute 'import_module("graphics"), import_name("flip_x")'> end
+local function _flip_y()
+  <cimport, cattribute 'import_module("graphics"), import_name("flip_y")'> end
+local function _draw_point(x: int32, y: int32, c: int32)
+  <cimport, cattribute 'import_module("graphics"), import_name("draw_point")'> end
+local function _draw_line(x1: int32, y1: int32, x2: int32, y2: int32, c: int32, sw: int32)
+  <cimport, cattribute 'import_module("graphics"), import_name("draw_line")'> end
+local function _draw_rect(x: int32, y: int32, w: int32, h: int32, fc: int32, sc: int32, sw: int32)
+  <cimport, cattribute 'import_module("graphics"), import_name("draw_rect")'> end
+local function _draw_rounded_rect(x: int32, y: int32, w: int32, h: int32, cw: int32, ch: int32, fc: int32, sc: int32, sw: int32)
+  <cimport, cattribute 'import_module("graphics"), import_name("draw_rounded_rect")'> end
+local function _draw_circle(x: int32, y: int32, d, fc: int32, sc: int32, sw: int32)
+  <cimport, cattribute 'import_module("graphics"), import_name("draw_circle")'> end
+local function _draw_ellipse(x: int32, y: int32, w: int32, h: int32, fc: int32, sc: int32, sw: int32)
+  <cimport, cattribute 'import_module("graphics"), import_name("draw_ellipse")'> end
+local function _draw_triangle(x1: int32, y1: int32, x2: int32, y2: int32, x3: int32, y3: int32, fc: int32, sc: int32, sw: int32)
+  <cimport, cattribute 'import_module("graphics"), import_name("draw_triangle")'> end
+local function _draw_arc(x: int32, y: int32, d: int32, ast: float32, asw: float32, fc: int32, sc: int32, sw: int32)
+  <cimport, cattribute 'import_module("graphics"), import_name("draw_arc")'> end
+local function _draw_sector(x: int32, y: int32, d: int32, ast: float32, asw: float32, fc: int32, sc: int32, sw: int32)
+  <cimport, cattribute 'import_module("graphics"), import_name("draw_sector")'> end
+local function _draw_text(
+  textPtr: cstring, textLen: uint32,
+  fontPtr: cstring, fontLen: uint32,
+  x: int32, y: int32, color: int32)
+    <cimport, cattribute 'import_module("graphics"), import_name("draw_text")'> end
+local function _draw_qr(
+  textPtr: cstring, textLen: uint32,
+  x: int32, y: int32,
+  black: int32, white: int32)
+    <cimport, cattribute 'import_module("graphics"), import_name("draw_qr")'> end
+local function _draw_image(ptr: cstring, size: uint32, x: int32, y: int32)
+  <cimport, cattribute 'import_module("graphics"), import_name("draw_image")'> end
+local function _draw_sub_image(
+  ptr: cstring, size: uint32,
+  x: int32, y: int32,
+  subX: int32, subY: int32,
+  subWidth: uint32, subHeight: uint32)
+    <cimport, cattribute 'import_module("graphics"), import_name("draw_sub_image")'> end
+local function _draw_sub_tilee(
+  ptr: cstring,
+  size: uint32,
+  -- Screen area to fill.
+  x: int32, y: int32,
+  w: uint32, h: uint32,
+  -- Image sub-region to use.
+  subX: int32, subY: int32,
+  subWidth: uint32, subHeight: uint32)
+    <cimport, cattribute 'import_module("graphics"), import_name("draw_sub_tile")'> end
+local function _draw_nine_slice(
+  ptr: cstring,
+  size: uint32,
+  -- Screen area to fill.
+  x: int32,
+  y: int32,
+  w: uint32,
+  h: uint32,
+  -- The area of the middle square on the image.
+  midX: int32,
+  midY: int32,
+  midWidth: uint32,
+  midHeight: uint32)
+    <cimport, cattribute 'import_module("graphics"), import_name("draw_nine_slice")'> end
+local function _set_canvas(ptr: cstring, size: uint32)
+  <cimport, cattribute 'import_module("graphics"), import_name("set_canvas")'> end
+local function _unset_canvas()
+  <cimport, cattribute 'import_module("graphics"), import_name("unset_canvas")'> end
+local function _read_pad(player: uint32): int32
+  <cimport, cattribute 'import_module("input"), import_name("read_pad")'> end
+local function _read_buttons(player: uint32): uint32
+  <cimport, cattribute 'import_module("input"), import_name("read_buttons")'> end
+local function _get_file_size(pathPtr: cstring, pathLen: uint32): uint32
+  <cimport, cattribute 'import_module("fs"), import_name("get_file_size")'> end
+local function _load_file(pathPtr: cstring, pathLen: uint32,bufPtr: cstring, bufLen: uint32): uint32
+  <cimport, cattribute 'import_module("fs"), import_name("load_file")'> end
+local function _dump_file(pathPtr: cstring, pathLen: uint32,bufPtr: cstring, bufLen: uint32): uint32
+  <cimport, cattribute 'import_module("fs"), import_name("dump_file")'> end
+local function _remove_file(pathPtr: cstring, pathLen: uint32)
+  <cimport, cattribute 'import_module("fs"), import_name("remove_file")'> end
+local function _get_me(): uint32
+  <cimport, cattribute 'import_module("net"), import_name("get_me")'> end
+local function _get_peers(): uint32
+  <cimport, cattribute 'import_module("net"), import_name("get_peers")'> end
+local function _save_stash(peerID: uint32, bufPtr: cstring, bufLen: uint32)
+  <cimport, cattribute 'import_module("net"), import_name("save_stash")'> end
+local function _load_stash(peerID: uint32, bufPtr: cstring, bufLen: uint32): uint32
+  <cimport, cattribute 'import_module("net"), import_name("load_stash")'> end
+local function _add_progress(peerID, badgeID: uint32, val: int32): uint32
+  <cimport, cattribute 'import_module("stats"), import_name("add_progress")'> end
+local function _add_score(peerID, boardID: uint32, val: int32): int32
+  <cimport, cattribute 'import_module("stats"), import_name("add_score")'> end
+local function _add_menu_item(index: uint32, ptr: cstring, size: uint32)
+  <cimport, cattribute 'import_module("menu"), import_name("add_menu_item")'> end
+local function _remove_menu_item(index: uint32)
+  <cimport, cattribute 'import_module("menu"), import_name("remove_menu_item")'> end
+local function _open_menu()
+  <cimport, cattribute 'import_module("menu"), import_name("open_menu")'> end
+local function _log_debug(ptr: cstring, size: uint32)
+  <cimport, cattribute 'import_module("misc"), import_name("log_debug")'> end
+local function _log_error(ptr: cstring, size: uint32)
+  <cimport, cattribute 'import_module("misc"), import_name("log_error")'> end
+local function _set_seed(seed: uint32)
+  <cimport, cattribute 'import_module("misc"), import_name("set_seed")'> end
+local function _get_random(): uint32
+  <cimport, cattribute 'import_module("misc"), import_name("get_random")'> end
+local function _get_time(): uint64
+  <cimport, cattribute 'import_module("misc"), import_name("get_time")'> end
+local function _get_name(index: uint32, ptr: cstring): uint32
+  <cimport, cattribute 'import_module("misc"), import_name("get_name")'> end
+local function _get_settings(index: uint32): uint64
+  <cimport, cattribute 'import_module("misc"), import_name("get_settings")'> end
+local function _restart()
+  <cimport, cattribute 'import_module("misc"), import_name("restart")'> end
+local function _quit()
+  <cimport, cattribute 'import_module("misc"), import_name("quit")'> end
 
 
 -- FUNCTIONS --

@@ -2,10 +2,6 @@
 
 local ff = require 'firefly'
 
-
-local function update()
-end
-
 local function render()
   ff.clear_screen(ff.Color.Green)
 end
