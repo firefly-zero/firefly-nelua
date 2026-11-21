@@ -211,49 +211,49 @@ end
 -- BINDINGS --
 
 
-local function _clear_screen(c: int32)
+local function _clear_screen(c: int32): void
   <cimport, cattribute 'import_module("graphics"), import_name("clear_screen")'> end
-local function _set_color(c: int32, r: int32, g: int32, b: int32)
+local function _set_color(c: int32, r: int32, g: int32, b: int32): void
   <cimport, cattribute 'import_module("graphics"), import_name("set_color")'> end
-local function _flip_x()
+local function _flip_x(): void
   <cimport, cattribute 'import_module("graphics"), import_name("flip_x")'> end
-local function _flip_y()
+local function _flip_y(): void
   <cimport, cattribute 'import_module("graphics"), import_name("flip_y")'> end
-local function _draw_point(x: int32, y: int32, c: int32)
+local function _draw_point(x: int32, y: int32, c: int32): void
   <cimport, cattribute 'import_module("graphics"), import_name("draw_point")'> end
-local function _draw_line(x1: int32, y1: int32, x2: int32, y2: int32, c: int32, sw: int32)
+local function _draw_line(x1: int32, y1: int32, x2: int32, y2: int32, c: int32, sw: int32): void
   <cimport, cattribute 'import_module("graphics"), import_name("draw_line")'> end
-local function _draw_rect(x: int32, y: int32, w: int32, h: int32, fc: int32, sc: int32, sw: int32)
+local function _draw_rect(x: int32, y: int32, w: int32, h: int32, fc: int32, sc: int32, sw: int32): void
   <cimport, cattribute 'import_module("graphics"), import_name("draw_rect")'> end
-local function _draw_rounded_rect(x: int32, y: int32, w: int32, h: int32, cw: int32, ch: int32, fc: int32, sc: int32, sw: int32)
+local function _draw_rounded_rect(x: int32, y: int32, w: int32, h: int32, cw: int32, ch: int32, fc: int32, sc: int32, sw: int32): void
   <cimport, cattribute 'import_module("graphics"), import_name("draw_rounded_rect")'> end
-local function _draw_circle(x: int32, y: int32, d: int32, fc: int32, sc: int32, sw: int32)
+local function _draw_circle(x: int32, y: int32, d: int32, fc: int32, sc: int32, sw: int32): void
   <cimport, cattribute 'import_module("graphics"), import_name("draw_circle")'> end
-local function _draw_ellipse(x: int32, y: int32, w: int32, h: int32, fc: int32, sc: int32, sw: int32)
+local function _draw_ellipse(x: int32, y: int32, w: int32, h: int32, fc: int32, sc: int32, sw: int32): void
   <cimport, cattribute 'import_module("graphics"), import_name("draw_ellipse")'> end
-local function _draw_triangle(x1: int32, y1: int32, x2: int32, y2: int32, x3: int32, y3: int32, fc: int32, sc: int32, sw: int32)
+local function _draw_triangle(x1: int32, y1: int32, x2: int32, y2: int32, x3: int32, y3: int32, fc: int32, sc: int32, sw: int32): void
   <cimport, cattribute 'import_module("graphics"), import_name("draw_triangle")'> end
-local function _draw_arc(x: int32, y: int32, d: int32, ast: float32, asw: float32, fc: int32, sc: int32, sw: int32)
+local function _draw_arc(x: int32, y: int32, d: int32, ast: float32, asw: float32, fc: int32, sc: int32, sw: int32): void
   <cimport, cattribute 'import_module("graphics"), import_name("draw_arc")'> end
-local function _draw_sector(x: int32, y: int32, d: int32, ast: float32, asw: float32, fc: int32, sc: int32, sw: int32)
+local function _draw_sector(x: int32, y: int32, d: int32, ast: float32, asw: float32, fc: int32, sc: int32, sw: int32): void
   <cimport, cattribute 'import_module("graphics"), import_name("draw_sector")'> end
 local function _draw_text(
   textPtr: cstring, textLen: uint32,
   fontPtr: *byte, fontLen: uint32,
-  x: int32, y: int32, color: int32)
+  x: int32, y: int32, color: int32): void
     <cimport, cattribute 'import_module("graphics"), import_name("draw_text")'> end
 local function _draw_qr(
   textPtr: cstring, textLen: uint32,
   x: int32, y: int32,
-  black: int32, white: int32)
+  black: int32, white: int32): void
     <cimport, cattribute 'import_module("graphics"), import_name("draw_qr")'> end
-local function _draw_image(ptr: *byte, size: uint32, x: int32, y: int32)
+local function _draw_image(ptr: *byte, size: uint32, x: int32, y: int32): void
   <cimport, cattribute 'import_module("graphics"), import_name("draw_image")'> end
 local function _draw_sub_image(
   ptr: *byte, size: uint32,
   x: int32, y: int32,
   subX: int32, subY: int32,
-  subWidth: uint32, subHeight: uint32)
+  subWidth: uint32, subHeight: uint32): void
     <cimport, cattribute 'import_module("graphics"), import_name("draw_sub_image")'> end
 local function _draw_sub_tile(
   ptr: *byte,
@@ -263,7 +263,7 @@ local function _draw_sub_tile(
   w: uint32, h: uint32,
   -- Image sub-region to use.
   subX: int32, subY: int32,
-  subWidth: uint32, subHeight: uint32)
+  subWidth: uint32, subHeight: uint32): void
     <cimport, cattribute 'import_module("graphics"), import_name("draw_sub_tile")'> end
 local function _draw_nine_slice(
   ptr: *byte,
@@ -273,11 +273,11 @@ local function _draw_nine_slice(
   w: uint32, h: uint32,
   -- The area of the middle square on the image.
   midX: int32, midY: int32,
-  midWidth: uint32, midHeight: uint32)
+  midWidth: uint32, midHeight: uint32): void
     <cimport, cattribute 'import_module("graphics"), import_name("draw_nine_slice")'> end
-local function _set_canvas(ptr: *byte, size: uint32)
+local function _set_canvas(ptr: *byte, size: uint32): void
   <cimport, cattribute 'import_module("graphics"), import_name("set_canvas")'> end
-local function _unset_canvas()
+local function _unset_canvas(): void
   <cimport, cattribute 'import_module("graphics"), import_name("unset_canvas")'> end
 local function _read_pad(player: uint32): int32
   <cimport, cattribute 'import_module("input"), import_name("read_pad")'> end
@@ -289,13 +289,13 @@ local function _load_file(pathPtr: cstring, pathLen: uint32, bufPtr: *byte, bufL
   <cimport, cattribute 'import_module("fs"), import_name("load_file")'> end
 local function _dump_file(pathPtr: cstring, pathLen: uint32, bufPtr: *byte, bufLen: uint32): uint32
   <cimport, cattribute 'import_module("fs"), import_name("dump_file")'> end
-local function _remove_file(pathPtr: cstring, pathLen: uint32)
+local function _remove_file(pathPtr: cstring, pathLen: uint32): void
   <cimport, cattribute 'import_module("fs"), import_name("remove_file")'> end
 local function _get_me(): uint32
   <cimport, cattribute 'import_module("net"), import_name("get_me")'> end
 local function _get_peers(): uint32
   <cimport, cattribute 'import_module("net"), import_name("get_peers")'> end
-local function _save_stash(peerID: uint32, bufPtr: *byte, bufLen: uint32)
+local function _save_stash(peerID: uint32, bufPtr: *byte, bufLen: uint32): void
   <cimport, cattribute 'import_module("net"), import_name("save_stash")'> end
 local function _load_stash(peerID: uint32, bufPtr: *byte, bufLen: uint32): uint32
   <cimport, cattribute 'import_module("net"), import_name("load_stash")'> end
@@ -303,17 +303,17 @@ local function _add_progress(peerID, badgeID: uint32, val: int32): uint32
   <cimport, cattribute 'import_module("stats"), import_name("add_progress")'> end
 local function _add_score(peerID, boardID: uint32, val: int32): int32
   <cimport, cattribute 'import_module("stats"), import_name("add_score")'> end
-local function _add_menu_item(index: uint32, ptr: cstring, size: uint32)
+local function _add_menu_item(index: uint32, ptr: cstring, size: uint32): void
   <cimport, cattribute 'import_module("menu"), import_name("add_menu_item")'> end
-local function _remove_menu_item(index: uint32)
+local function _remove_menu_item(index: uint32): void
   <cimport, cattribute 'import_module("menu"), import_name("remove_menu_item")'> end
-local function _open_menu()
+local function _open_menu(): void
   <cimport, cattribute 'import_module("menu"), import_name("open_menu")'> end
-local function _log_debug(ptr: cstring, size: uint32)
+local function _log_debug(ptr: cstring, size: uint32): void
   <cimport, cattribute 'import_module("misc"), import_name("log_debug")'> end
-local function _log_error(ptr: cstring, size: uint32)
+local function _log_error(ptr: cstring, size: uint32): void
   <cimport, cattribute 'import_module("misc"), import_name("log_error")'> end
-local function _set_seed(seed: uint32)
+local function _set_seed(seed: uint32): void
   <cimport, cattribute 'import_module("misc"), import_name("set_seed")'> end
 local function _get_random(): uint32
   <cimport, cattribute 'import_module("misc"), import_name("get_random")'> end
@@ -323,96 +323,96 @@ local function _get_name(index: uint32, ptr: cstring): uint32
   <cimport, cattribute 'import_module("misc"), import_name("get_name")'> end
 local function _get_settings(index: uint32): uint64
   <cimport, cattribute 'import_module("misc"), import_name("get_settings")'> end
-local function _restart()
+local function _restart(): void
   <cimport, cattribute 'import_module("misc"), import_name("restart")'> end
-local function _quit()
+local function _quit(): void
   <cimport, cattribute 'import_module("misc"), import_name("quit")'> end
 
 
 -- FUNCTIONS --
 
 
-function ff.clear_screen(c: ff.Color)
+function ff.clear_screen(c: ff.Color): void
   _clear_screen(c)
 end
 
-function ff.set_color(c: ff.Color, rgb: ff.RGB)
+function ff.set_color(c: ff.Color, rgb: ff.RGB): void
   _set_color(c, rgb.r, rgb.g, rgb.b)
 end
 
-function ff.flip_x()
+function ff.flip_x(): void
   _flip_x()
 end
 
-function ff.flip_y()
+function ff.flip_y(): void
   _flip_y()
 end
 
-function ff.draw_point(p: ff.Point, c: ff.Color)
+function ff.draw_point(p: ff.Point, c: ff.Color): void
   _draw_point(p.x, p.y, c)
 end
 
-function ff.draw_line(a: ff.Point, b: ff.Point, s: ff.LineStyle)
+function ff.draw_line(a: ff.Point, b: ff.Point, s: ff.LineStyle): void
   _draw_line(a.x, a.y, b.x, b.y, s.color, s.width)
 end
 
-function ff.draw_rect(p: ff.Point, b: ff.Size, s: ff.Style)
+function ff.draw_rect(p: ff.Point, b: ff.Size, s: ff.Style): void
   _draw_rect(p.x, p.y, b.w, b.h, s.fill_color, s.stroke_color, s.stroke_width)
 end
 
-function ff.draw_rounded_rect(p: ff.Point, b: ff.Size, corners: ff.Size, s: ff.Style)
+function ff.draw_rounded_rect(p: ff.Point, b: ff.Size, corners: ff.Size, s: ff.Style): void
   _draw_rounded_rect(p.x, p.y, b.w, b.h, corners.w, corners.h, s.fill_color, s.stroke_color, s.stroke_width)
 end
 
-function ff.draw_circle(p: ff.Point, d: integer, s: ff.Style)
+function ff.draw_circle(p: ff.Point, d: integer, s: ff.Style): void
   _draw_circle(p.x, p.y, d, s.fill_color, s.stroke_color, s.stroke_width)
 end
 
-function ff.draw_ellipse(p: ff.Point, b: ff.Size, s: ff.Style)
+function ff.draw_ellipse(p: ff.Point, b: ff.Size, s: ff.Style): void
   _draw_ellipse(p.x, p.y, b.w, b.h, s.fill_color, s.stroke_color, s.stroke_width)
 end
 
-function ff.draw_triangle(a: ff.Point, b: ff.Point, c: ff.Point, s: ff.Style)
+function ff.draw_triangle(a: ff.Point, b: ff.Point, c: ff.Point, s: ff.Style): void
   _draw_triangle(a.x, a.y, b.x, b.y, c.x, c.y, s.fill_color, s.stroke_color, s.stroke_width)
 end
 
-function ff.draw_arc(p: ff.Point, d: integer, start: ff.Angle, sweep: ff.Angle, s: ff.Style)
+function ff.draw_arc(p: ff.Point, d: integer, start: ff.Angle, sweep: ff.Angle, s: ff.Style): void
   _draw_arc(p.x, p.y, d, start._a, sweep._a, s.fill_color, s.stroke_color, s.stroke_width)
 end
 
-function ff.draw_sector(p: ff.Point, d: integer, start: ff.Angle, sweep: ff.Angle, s: ff.Style)
+function ff.draw_sector(p: ff.Point, d: integer, start: ff.Angle, sweep: ff.Angle, s: ff.Style): void
   _draw_sector(p.x, p.y, d, start._a, sweep._a, s.fill_color, s.stroke_color, s.stroke_width)
 end
 
-function ff.draw_text(t: string, f: ff.Font, p: ff.Point, c: ff.Color)
+function ff.draw_text(t: string, f: ff.Font, p: ff.Point, c: ff.Color): void
   _draw_text(t, #t, &f._b[0], #f._b, p.x, p.y, c)
 end
 
-function ff.draw_qr(t: string, p: ff.Point, black: ff.Color, white: ff.Color)
+function ff.draw_qr(t: string, p: ff.Point, black: ff.Color, white: ff.Color): void
   _draw_qr(t, #t, p.x, p.y, black, white)
 end
 
-function ff.draw_image(i: ff.Image, p: ff.Point)
+function ff.draw_image(i: ff.Image, p: ff.Point): void
   _draw_image(&i._b[0], #i._b, p.x, p.y)
 end
 
-function ff.draw_sub_image(i: ff.SubImage, p: ff.Point)
+function ff.draw_sub_image(i: ff.SubImage, p: ff.Point): void
   _draw_sub_image(&i._b[0], #i._b, p.x, p.y, i._p.x, i._p.y, i._s.w, i._s.h)
 end
 
-function ff.draw_sub_tile(i: ff.SubImage, p: ff.Point, s: ff.Size)
+function ff.draw_sub_tile(i: ff.SubImage, p: ff.Point, s: ff.Size): void
   _draw_sub_tile(&i._b[0], #i._b, p.x, p.y, s.w, s.h, i._p.x, i._p.y, i._s.w, i._s.h)
 end
 
-function ff.draw_nine_slice(i: ff.SubImage, p: ff.Point, s: ff.Size)
+function ff.draw_nine_slice(i: ff.SubImage, p: ff.Point, s: ff.Size): void
   _draw_nine_slice(&i._b[0], #i._b, p.x, p.y, s.w, s.h, i._p.x, i._p.y, i._s.w, i._s.h)
 end
 
-function ff.set_canvas(i: ff.Image)
+function ff.set_canvas(i: ff.Image): void
   _set_canvas(&i._b[0], #i._b)
 end
 
-function ff.unset_canvas()
+function ff.unset_canvas(): void
   _unset_canvas()
 end
 
