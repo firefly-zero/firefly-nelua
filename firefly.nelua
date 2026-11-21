@@ -162,6 +162,21 @@ global ff.Pad = @record{
   y: integer,
 }
 
+global ff.DPad8 = @record{
+  left: boolean,
+  right: boolean,
+  up: boolean,
+  down: boolean,
+}
+
+global ff.DPad4 = @enum{
+  None = 0,
+  Right,
+  Up,
+  Left,
+  Down,
+}
+
 global ff.Buttons = @record{
   s: boolean,
   e: boolean,
@@ -220,6 +235,41 @@ function ff.Image:sub(p: ff.Point, s: ff.Size): ff.SubImage
     _b = self._b,
     _p = p,
     _s = s,
+  }
+end
+
+function ff.Pad:to_dpad4(): ff.DPad4
+  local function abs(i: integer): integer
+    if i < 0 then
+      return -i
+    end
+    return i
+  end
+
+  local threshold <comptime> = 300
+  local x = self.x
+  local y = self.y
+  local abs_x = abs(x)
+  local abs_y = abs(y)
+  if y > threshold and y > abs_x then
+    return ff.DPad4.Up
+  elseif y < -threshold and -y > abs_x then
+    return ff.DPad4.Down
+  elseif x > threshold and x > abs_y then
+    return ff.DPad4.Right
+  elseif x < -threshold and -x > abs_y then
+    return ff.DPad4.Left
+  end
+  return ff.DPad4.None
+end
+
+function ff.Pad:to_dpad8(): ff.DPad8
+  local threshold <comptime> = 400
+  return ff.DPad8{
+    left = self.x <= -threshold,
+    right = self.x >= threshold,
+    down = self.y <= -threshold,
+    up = self.y > threshold,
   }
 end
 
@@ -438,15 +488,15 @@ end
 
 function ff.read_pad(p: ff.Peer): (ff.Pad, boolean)
   local raw = _read_pad(p._p)
-	local pressed = raw ~= 0xffff
-	if not pressed then
-		return {}, false
-	end
-	local pad = ff.Pad{
-		x = integer(int16(raw >> 16)),
-		y = integer(int16(raw)),
-	}
-	return pad, true
+  local pressed = raw ~= 0xffff
+  if not pressed then
+    return {}, false
+  end
+  local pad = ff.Pad{
+    x = integer(int16(raw >> 16)),
+    y = integer(int16(raw)),
+  }
+  return pad, true
 end
 
 function ff.read_buttons(p: ff.Peer): ff.Buttons
@@ -456,12 +506,12 @@ function ff.read_buttons(p: ff.Peer): ff.Buttons
   end
 
   local raw = _read_buttons(p._p)
-	return ff.Buttons{
-		s = has_bit_set(raw, 0),
-		e = has_bit_set(raw, 1),
-		w = has_bit_set(raw, 2),
-		n = has_bit_set(raw, 3),
-	}
+  return ff.Buttons{
+    s = has_bit_set(raw, 0),
+    e = has_bit_set(raw, 1),
+    w = has_bit_set(raw, 2),
+    n = has_bit_set(raw, 3),
+  }
 end
 
 
