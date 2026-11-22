@@ -535,6 +535,19 @@ function ff.load_file(path: string): ff.File
   return ff.File{buf}
 end
 
+function ff.dump_file(path: string, buf: span(byte)): void
+  _dump_file(path, #path, &buf[0], #buf)
+end
+
+function ff.remove_file(path: string): void
+  _remove_file(path, #path)
+end
+
+
+-- FUNCTIONS: NET --
+
+
+
 
 
 -- HOOKS --
