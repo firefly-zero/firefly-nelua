@@ -154,9 +154,11 @@ global ff.SubImage = @record{
   _s: ff.Size,
 }
 
-global ff.Peer = @record{ _p: uint8 }
+global ff.Peer = @record{_p: uint8}
 global ff.Peer.combined = ff.Peer{0xFF}
 global ff.combined = ff.Peer{0xFF}
+global ff.Me = @record{_p: uint8}
+global ff.Peers = @record{_p: uint32}
 
 global ff.Pad = @record{
   x: integer,
@@ -276,6 +278,41 @@ function ff.Pad:to_dpad8(): ff.DPad8
     down = self.y <= -threshold,
     up = self.y > threshold,
   }
+end
+
+function ff.Me:__eq(rhs: ff.Peer): boolean
+  return self._p == rhs._p
+end
+
+function ff.Peers:contains(p: ff.Peer): boolean
+  return (self._p >> p._p) & 1 ~= 0
+end
+
+function ff.Peers:__len(): integer
+  local cnt = 0
+  local p = self._p
+  while p ~= 0 do
+    if p & 1 == 1 then
+      cnt = cnt + 1
+    end
+    p = p >> 1
+  end
+  return cnt
+end
+
+function ff.Peers:to_span(): span(ff.Peer)
+  local res: span(ff.Peer)
+  res = default_allocator:xspanrealloc(res, 32)
+	local i = 0
+  for peer_id = 0,31 do
+		local peer = ff.Peer{peer_id}
+		if self:contains(peer) then
+			res[i] = peer
+      i = i + 1
+		end
+	end
+  res = default_allocator:xspanrealloc(res, i)
+	return res
 end
 
 
@@ -547,6 +584,15 @@ end
 -- FUNCTIONS: NET --
 
 
+function ff.get_me(): ff.Me
+  local raw = _get_me()
+  return ff.Me{raw}
+end
+
+function ff.get_peers(): ff.Peers
+  local raw = _get_peers()
+  return ff.Peers{raw}
+end
 
 
 
