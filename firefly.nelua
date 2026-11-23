@@ -1,33 +1,21 @@
 ##[[
--- Credits note: this code was heavily inspired by wasm4 setup code:
+-- Based on:
 -- https://github.com/aduros/wasm4/blob/main/cli/assets/templates/nelua/src/wasm4.nelua
-
--- Don't search for the entry point symbol:
--- https://lld.llvm.org/WebAssembly.html#cmdoption-no-entry
-ldflags '-Wl,--no-entry'
-
--- WebAssembly execution model set to reactor (makes `main` not required):
--- https://clang.llvm.org/docs/ClangCommandLineReference.html#cmdoption-clang-mexec-model
+-- https://codeberg.org/Andre-LA/nelua-gamercade/src/branch/main/gamercade.nelua
 cflags '-mexec-model=reactor'
-
 -- https://github.com/edubart/nelua-lang/blob/master/lualib/nelua/typedefs.lua#L219
-
 -- Disable entry point generation for the GC.
 context.rootpragmas.nogcentry = true
-
 -- Changes how messages are written to stderr when a runtime error occur.
 context.rootpragmas.writestderr = "hooked"
-
--- "Changes abort semantics"
+-- Changes abort semantics, abort happens on failed assertions or runtime errors.
 context.rootpragmas.abort = "trap"
 ]]
 
 require 'span'
 require 'allocators.default'
 require 'stringbuilder'
-
-
--- https://codeberg.org/Andre-LA/nelua-gamercade/src/branch/main/gamercade.nelua
+require 'string'
 
 local ff = @record{}
 
@@ -723,6 +711,12 @@ end
 
 function ff.quit(): void
   _quit()
+end
+
+function ff.get_name(p: ff.Peer): string
+  local name = string.create(16)
+  local size = _get_name(p._p, name)
+  return string.subview(name, 0, size)
 end
 
 function ff.get_settings(p: ff.Peer): ff.Settings
