@@ -527,7 +527,7 @@ end
 
 
 function ff.read_pad(p: ff.Peer): (ff.Pad, boolean)
-  local raw = _read_pad(p._p)
+  local raw <const> = _read_pad(p._p)
   local pressed = raw ~= 0xffff
   if not pressed then
     return {}, false
@@ -648,11 +648,44 @@ function ff.open_menu(): void
 end
 
 
+-- FUNCTIONS: MISC --
+
+
+function ff.log_debug(t: string): void
+  _log_debug(t, #t)
+end
+
+function ff.log_error(t: string): void
+  _log_error(t, #t)
+end
+
+function ff.set_seed(seed: uint32): void
+  _set_seed(seed)
+end
+
+function ff.get_random(): uint32
+  return _get_random()
+end
+
+function ff.get_time(): number
+  local us <const> = number(_get_time())
+  local ms <const> = us / 1000
+  return ms / 1000
+end
+
+function ff.restart(): void
+  _restart()
+end
+
+function ff.quit(): void
+  _quit()
+end
+
 -- HOOKS --
 
 
 local function write_stderr(msg: cstring, len: usize, flush: boolean): void <codename "nelua_write_stderr">
-  -- _log_error(msg, len)
+  _log_error(msg, len)
 end
 
 global function print(...: varargs)
@@ -667,7 +700,7 @@ global function print(...: varargs)
   ## end
 
   local text_view = sb:view()
-  -- _log_debug(text_view.data, #text_view)
+  _log_debug(text_view.data, #text_view)
 end
 
 
