@@ -24,6 +24,8 @@ context.rootpragmas.abort = "trap"
 
 require 'span'
 require 'allocators.default'
+require 'stringbuilder'
+
 
 -- https://codeberg.org/Andre-LA/nelua-gamercade/src/branch/main/gamercade.nelua
 
@@ -193,6 +195,48 @@ global ff.Badge = @record{_b: uint8}
 global ff.Board = @record{_b: uint8}
 global ff.MenuItem = @record{_i: uint8}
 
+
+global ff.Language = @string
+
+global ff.Theme = @record{
+	id: uint8,
+	-- The main color of text and boxes.
+	primary: ff.Color,
+	-- The color of disable options, muted text, etc.
+	secondary: ff.Color,
+	-- The color of important elements, active options, etc.
+	accent: ff.Color,
+	-- The background color, the most contrast color to primary.
+	bg: ff.Color,
+}
+
+global ff.Settings = @record{
+	-- The preferred color scheme of the player.
+	theme: ff.Theme,
+
+	-- The configured interface language.
+	language: ff.Language,
+
+	-- If true, the screen is rotated 180 degrees.
+	--
+	-- In other words, the player holds the device upside-down.
+	-- The touchpad is now on the right and the buttons are on the left.
+	rotate_screen: boolean,
+
+	-- The player has photosensitivity. The app should avoid any rapid flashes.
+	reduce_flashing: boolean,
+
+	-- The player wants increased contrast for colors.
+  --
+	-- If set, the black and white colors in the default
+	-- palette are adjusted automatically. All other colors
+	-- in the default palette or all colors in a custom palette
+	-- should be adjusted by the app.
+	contrast: boolean,
+
+	-- If true, the player wants to see easter eggs, holiday effects, and weird jokes.
+	easter_eggs: boolean,
+}
 
 -- CONSTRUCTORS --
 
@@ -681,6 +725,37 @@ function ff.quit(): void
   _quit()
 end
 
+function ff.get_settings(p: ff.Peer): ff.Settings
+  local function parse_color(c: uint64): ff.Color
+    return c&0xf + 1
+  end
+
+  local raw = _get_settings(p._p)
+
+  local sb: stringbuilder <close>
+  sb:writebyte(byte(raw>>8))
+  sb:writebyte(byte(raw))
+	local language: ff.Language = sb:view()
+
+	local flags = raw >> 16
+	local theme_raw = raw >> 32
+	local theme = ff.Theme{
+		id = uint8(theme_raw),
+		primary = parse_color(theme_raw >> 20),
+		secondary = parse_color(theme_raw >> 16),
+		accent = parse_color(theme_raw >> 12),
+		bg = parse_color(theme_raw >> 8),
+	}
+	return ff.Settings{
+		theme = theme,
+		language = language,
+		rotate_screen = (flags & 0b0001) ~= 0,
+		reduce_flashing = (flags & 0b0010) ~= 0,
+		contrast = (flags & 0b0100) ~= 0,
+		easter_eggs = (flags & 0b1000) ~= 0,
+	}
+end
+
 -- HOOKS --
 
 
@@ -689,8 +764,6 @@ local function write_stderr(msg: cstring, len: usize, flush: boolean): void <cod
 end
 
 global function print(...: varargs)
-  local stringbuilder = require 'stringbuilder'
-
   local sb: stringbuilder <close>
   ## for i=1,select('#', ...) do
     ## if i > 1 then
