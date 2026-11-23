@@ -189,13 +189,12 @@ global ff.Buttons = @record{
 
 global ff.Stash = @span(byte)
 
+global ff.Badge = @record{_b: uint8}
+global ff.Board = @record{_b: uint8}
+
 
 -- CONSTRUCTORS --
 
-
-function ff.p(x: integer, y: integer): ff.Point
-  return ff.Point{x = x, y = y}
-end
 
 -- Define an angle in radians where Tau (doubled Pi) is the full circle.
 function ff.radians(a: float32): ff.Angle
@@ -214,10 +213,6 @@ end
 
 function ff.outlined(c: ff.Color, w: integer): ff.Style
   return ff.Style{stroke_color = c, stroke_width = w}
-end
-
-function ff.l(c: ff.Color, w: integer): ff.LineStyle
-  return ff.LineStyle{color = c, width = w}
 end
 
 function ff.File.from_bytes(b: span(byte)): ff.File
@@ -600,19 +595,39 @@ function ff.get_peers(): ff.Peers
   return ff.Peers{raw}
 end
 
-function ff.load_stash(peer: ff.Peer, buf: facultative(ff.Stash)): ff.Stash
+function ff.load_stash(p: ff.Peer, buf: facultative(ff.Stash)): ff.Stash
   ## if buf.type.is_niltype then
     buf = default_allocator:xspanalloc(@byte, 80)
   ## end
-  local size = _load_stash(peer._p, &buf[0], #buf)
+  local size = _load_stash(p._p, &buf[0], #buf)
   ## if not buf.type.is_niltype then
     buf = default_allocator:xspanrealloc(buf, size)
   ## end
   return buf
 end
 
-function ff.save_stash(peer: ff.Peer, buf: ff.Stash): void
-  _save_stash(peer._p, &buf[0], #buf)
+function ff.save_stash(p: ff.Peer, buf: ff.Stash): void
+  _save_stash(p._p, &buf[0], #buf)
+end
+
+
+-- FUNCTIONS: STATS --
+
+
+function ff.add_progress(p: ff.Peer, b: ff.Badge, val: integer): integer
+  return _add_progress(p._p, b._b, val)
+end
+
+function ff.get_progress(p: ff.Peer, b: ff.Badge): integer
+  return _add_progress(p._p, b._b, 0)
+end
+
+function ff.add_score(p: ff.Peer, b: ff.Board, val: integer): integer
+  return _add_score(p._p, b._b, val)
+end
+
+function ff.get_score(p: ff.Peer, b: ff.Board): integer
+  return _add_score(p._p, b._b, 0)
 end
 
 
