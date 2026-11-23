@@ -226,6 +226,7 @@ global ff.Settings = @record{
 	easter_eggs: boolean,
 }
 
+
 -- CONSTRUCTORS --
 
 
@@ -254,6 +255,7 @@ end
 
 
 -- METHODS --
+
 
 function ff.File:to_image(): ff.Image
   return ff.Image{self._b}

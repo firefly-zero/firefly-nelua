@@ -1,5 +1,4 @@
 ## context.rootpragmas.nogc = true
-
 local ff = require 'firefly'
 
 local function render()
