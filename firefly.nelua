@@ -58,6 +58,18 @@ local ff = @record{}
       #[cb.before_exit]#()
     end
   ## end
+
+  ## if cb.cheat then
+    local function _cheat(cmd: int32, val: int32): int32 <cexport, cattribute'export_name("cheat")'>
+      return #[cb.cheat]#(cmd, val)
+    end
+  ## end
+
+  ## if cb.handle_menu then
+    local function _handle_menu(idx: int32): void <cexport, cattribute'export_name("handle_menu")'>
+      #[cb.handle_menu]#(idx)
+    end
+  ## end
 ## end
 
 
@@ -181,7 +193,7 @@ global ff.Stash = @span(byte)
 
 global ff.Badge = @record{_b: uint8}
 global ff.Board = @record{_b: uint8}
-global ff.MenuItem = @record{_i: uint8}
+global ff.MenuItem = @uint8
 
 
 global ff.Language = @string
@@ -670,11 +682,11 @@ end
 
 
 function ff.add_menu_item(id: ff.MenuItem, name: string): void
-  _add_menu_item(id._i, name, #name)
+  _add_menu_item(id, name, #name)
 end
 
 function ff.remove_menu_item(id: ff.MenuItem): void
-  _remove_menu_item(id._i)
+  _remove_menu_item(id)
 end
 
 function ff.open_menu(): void
